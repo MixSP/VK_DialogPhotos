@@ -12,12 +12,13 @@ FRIEND_ID = 'id друга'
 
 def get_request(offset):
     r = requests.get('https://api.vk.com/method/messages.getHistoryAttachments', params={'access_token': TOKEN,
-                                                                                         'peer_id': FRIEND_ID,
-                                                                                         'media_type': 'photo',
-                                                                                         'start_from': offset,
-                                                                                         'count': 200, 
-                                                                                         'photo_sizes': True})
-    
+                                                                                             'peer_id': FRIEND_ID,
+                                                                                             'media_type': 'photo',
+                                                                                             'start_from': offset,
+                                                                                             'count': 200,
+                                                                                             'photo_sizes': True,
+                                                                                             'v': 5.46})
+
     return r.json()
 
 
@@ -39,36 +40,38 @@ def download_photo(url):
 def main():
     offset = 0
     urls = set()
-    
+
     try:
         while True:
             r = get_request(offset)
-        
-            length = len(r['response'])
+
+            length = len(r['response']['items'])
             offset = r['response']['next_from']
 
-            for number in range(1, length - 1):
-                photo = r['response'][str(number)]['photo']
+            for number in range(length):
+                photo = r['response']['items'][number]['photo']
                 urls.add(get_largest_size(photo))
 
-            if length < 202:
+            if length < 200:
                 break
-
+            
             sleep(0.35)
+
 
         print(len(urls), 'photos')
         mkdir(FRIEND_ID)
-
-        with Pool(20) as p:
-            p.map(download_photo, urls)
-
+        
     except FileExistsError:
         with Pool(20) as p:
             p.map(download_photo, urls)
-    except KeyError:
-        print('Error!', r['error']['error_msg'])
     except TypeError:
         print('Error! You don\'t have any photos with this user.')
+    except KeyError:
+        print(r['error']['error_msg'])
+
+
+    with Pool(20) as p:
+        p.map(download_photo, urls)
 
 
 if __name__ == '__main__':

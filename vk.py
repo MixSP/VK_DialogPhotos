@@ -12,12 +12,12 @@ FRIEND_ID = 'id друга'
 
 def get_request(offset):
     r = requests.get('https://api.vk.com/method/messages.getHistoryAttachments', params={'access_token': TOKEN,
-                                                                                             'peer_id': FRIEND_ID,
-                                                                                             'media_type': 'photo',
-                                                                                             'start_from': offset,
-                                                                                             'count': 200,
-                                                                                             'photo_sizes': True,
-                                                                                             'v': 5.46})
+                                                                                         'peer_id': FRIEND_ID,
+                                                                                         'media_type': 'photo',
+                                                                                         'start_from': offset,
+                                                                                         'count': 200,
+                                                                                         'photo_sizes': True,
+                                                                                         'v': 5.46})
 
     return r.json()
 

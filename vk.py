@@ -15,15 +15,14 @@ def get_request(offset):
                                                                                          'start_from': offset,
                                                                                          'count': 200,
                                                                                          'photo_sizes': True,
-                                                                                         'v': 5.46})
-
+                                                                                         'v': 5.131})
     return r.json()
 
 
 def get_largest_size(photo):
     sizes = photo['sizes']
 
-    return sorted(sizes, key=lambda d: d['width'])[-1]['src']
+    return sorted(sizes, key=lambda d: d['width'])[-1]['url']
 
 
 def download_photo(url):
@@ -47,7 +46,7 @@ def main():
             offset = r['response']['next_from']
 
             for number in range(length):
-                photo = r['response']['items'][number]['photo']
+                photo = r['response']['items'][number]['attachment']['photo']
                 urls.add(get_largest_size(photo))
 
             if length < 200:

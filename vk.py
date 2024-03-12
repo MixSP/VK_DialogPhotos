@@ -44,6 +44,7 @@ def get_largest_size(photo):
 def download_photo(url):
     r = requests.get(url, stream=True)
     filename = url.split('/')[-1]
+    filename = filename.split('?')[0]
 
     with open(FRIEND_ID + '/' + filename, 'bw') as file:
         for chunk in r.iter_content(4096):
